@@ -1,4 +1,4 @@
-v1.20.0-redfish.preview.2
+1.22.0-redfish-test-preview.1
 git add .
-git commit -m "fix(redfish): correct session cleanup"
+git commit -m "fix(redfish): updated version"
 git push origin
