@@ -1,0 +1,4 @@
+v1.20.0-redfish.preview.2
+git add .
+git commit -m "fix(redfish): correct session cleanup"
+git push origin
