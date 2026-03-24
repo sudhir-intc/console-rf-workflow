@@ -9,7 +9,7 @@
     },
     {
       "name": "redfish-test",
-      "prerelease": "redfish-preview"
+      "prerelease": "redfish-test-preview"
     }
   ],
   "plugins": [
