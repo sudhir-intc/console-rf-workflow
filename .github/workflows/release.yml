@@ -38,6 +38,18 @@ jobs:
       - name: Install `@semantic-release/exec` plugin
         run: npm install @semantic-release/exec @semantic-release/changelog
 
+      - name: Sync local tags with origin
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git remote set-url origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git"
+          git fetch --force --prune --prune-tags origin '+refs/tags/*:refs/tags/*'
+          for tag in $(git tag); do
+            if ! git ls-remote --exit-code --tags origin "refs/tags/${tag}" >/dev/null 2>&1; then
+              git tag -d "${tag}"
+            fi
+          done
+
       - name: Semantic Release dry-run
         id: semantic-release
         env:
@@ -242,6 +254,15 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           git remote set-url origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git"
+
+      - name: Sync local tags with origin
+        run: |
+          git fetch --force --prune --prune-tags origin '+refs/tags/*:refs/tags/*'
+          for tag in $(git tag); do
+            if ! git ls-remote --exit-code --tags origin "refs/tags/${tag}" >/dev/null 2>&1; then
+              git tag -d "${tag}"
+            fi
+          done
 
       - name: Semantic Release
         id: semantic-release
