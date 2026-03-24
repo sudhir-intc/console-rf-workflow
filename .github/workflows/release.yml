@@ -9,7 +9,7 @@ name: Semantic-Release CI
 
 on:
   push:
-    branches: [main, beta]
+    branches: [main, beta, redfish-wf]
 
 permissions:
   contents: read
@@ -150,7 +150,7 @@ jobs:
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           persist-credentials: false
-  
+
       # Restore unified build cache
       - shell: bash
         run: |
@@ -163,7 +163,7 @@ jobs:
             dist/darwin
             dist/windows
           key: all-platforms-${{ env.sha_short }}
-      
+
       # Generate licenses.zip
       - name: Use Node.js 22.x
         uses: actions/setup-node@1d0ff469b7ec7b3cb9d8673fde0c81c44821de2a # v4.2.0
@@ -210,7 +210,7 @@ jobs:
 
       - name: Create licenses.zip
         run: zip -r licenses.zip licenses
-      
+
       - name: Docker Login
         uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567 # v3.3.0
         with:
