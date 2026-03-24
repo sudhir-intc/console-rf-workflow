@@ -1,4 +1,4 @@
-1.22.0-redfish-test-preview.1
+1.23.0-redfish-test-preview.2
 git add .
 git commit -m "fix(redfish): updated version"
 git push origin
