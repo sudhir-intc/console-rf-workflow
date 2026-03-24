@@ -6,6 +6,10 @@
     {
       "name": "beta",
       "prerelease": "beta"
+    },
+    {
+      "name": "redfish-test",
+      "prerelease": "redfish-preview"
     }
   ],
   "plugins": [
@@ -15,6 +19,7 @@
         "releaseRules": [
           {
             "type": "chore",
+            "scope": "sync",
             "release": "patch"
           }
         ]
@@ -69,7 +74,7 @@
       "@semantic-release/exec",
       {
         "prepareCmd": "./build.sh ${nextRelease.version} ",
-        "publishCmd": "docker push vprodemo.azurecr.io/console:v${nextRelease.version} && docker push vprodemo.azurecr.io/console:latest && docker push vprodemo.azurecr.io/console:v${nextRelease.version}-headless && docker push vprodemo.azurecr.io/console:latest-headless",
+        "publishCmd": "if [ \"$RELEASE_TEST_MODE\" = \"true\" ]; then echo 'RELEASE_TEST_MODE=true, skipping Docker publish'; else docker push vprodemo.azurecr.io/console:v${nextRelease.version} && docker push vprodemo.azurecr.io/console:latest && docker push vprodemo.azurecr.io/console:v${nextRelease.version}-headless && docker push vprodemo.azurecr.io/console:latest-headless; fi",
         "verifyReleaseCmd": "echo v${nextRelease.version} > .VERSION"
       }
     ]
