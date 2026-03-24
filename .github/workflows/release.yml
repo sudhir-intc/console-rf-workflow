@@ -35,12 +35,20 @@ jobs:
       - name: Semantic Release dry-run
         id: semantic-release
         env:
-          GITHUB_REF: ${{ github.head_ref || github.ref_name }}
+          GITHUB_REF_NAME: ${{ github.head_ref || github.ref_name }}
           GITHUB_TOKEN: ${{ secrets.ROSIE_TOKEN }}
         run: |
           # unset GITHUB_ACTIONS
           # git checkout -b ${{ github.base_ref }} pull/${{ github.event.number }}/merge
-          npx semantic-release --dry-run --no-ci --branches main,$GITHUB_REF
+          echo "Running semantic-release dry-run for branches: main and ${GITHUB_REF_NAME}"
+          npx semantic-release --dry-run --no-ci --branches main --branches "${GITHUB_REF_NAME}"
+
+          if [ ! -f .VERSION ]; then
+            echo "semantic-release did not generate .VERSION on branch '${GITHUB_REF_NAME}'."
+            echo "This usually means no release was calculated for this commit/branch."
+            exit 1
+          fi
+
           version=$(cat .VERSION)
           echo "version=$version" >> $GITHUB_OUTPUT
 
