@@ -19,6 +19,7 @@
         "releaseRules": [
           {
             "type": "chore",
+            "scope": "sync",
             "release": "patch"
           }
         ]
