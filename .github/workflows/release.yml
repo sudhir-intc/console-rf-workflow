@@ -7,6 +7,9 @@
 
 name: Semantic-Release CI
 
+env:
+  RELEASE_TEST_MODE: "true"
+
 on:
   push:
     branches: [main, beta, redfish-wf]
@@ -223,6 +226,7 @@ jobs:
         run: zip -r licenses.zip licenses
 
       - name: Docker Login
+        if: env.RELEASE_TEST_MODE != 'true'
         uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567 # v3.3.0
         with:
           registry: vprodemo.azurecr.io
@@ -235,6 +239,7 @@ jobs:
         uses: cycjimmy/semantic-release-action@b1b432f13acb7768e0c8efdec416d363a57546f2 # v4.1.1
         if: steps.cache.outputs.cache-hit != 'true' # do not run if cache hit
         with:
+          dry_run: ${{ env.RELEASE_TEST_MODE }}
           semantic_version:
             19.0.5 # It is recommended to specify a version range
             # for semantic-release when using
@@ -246,6 +251,7 @@ jobs:
 
       - name: Check if OpenAPI files changed
         id: check-openapi-changes
+        if: env.RELEASE_TEST_MODE != 'true'
         run: |
           git fetch origin main
           if git diff --name-only origin/main HEAD | grep -q '^internal/controller/openapi/'; then
@@ -255,11 +261,12 @@ jobs:
           fi
 
       - name: Generate OpenAPI specification
-        if: steps.semantic-release.outputs.new_release_published == 'true' && steps.check-openapi-changes.outputs.changed == 'true'
+        if: env.RELEASE_TEST_MODE != 'true' && steps.semantic-release.outputs.new_release_published == 'true' && steps.check-openapi-changes.outputs.changed == 'true'
         run: |
           GIN_MODE=debug go run ./cmd/app/main.go
 
       - name: Verify OpenAPI spec was generated
+        if: env.RELEASE_TEST_MODE != 'true' && steps.semantic-release.outputs.new_release_published == 'true' && steps.check-openapi-changes.outputs.changed == 'true'
         run: |
           if [ ! -f "doc/openapi.json" ]; then
             exit 1
@@ -267,7 +274,7 @@ jobs:
           head -20 doc/openapi.json
 
       - name: Push to SwaggerHub
-        if: vars.SWAGGERHUB_OWNER != '' && vars.SWAGGERHUB_API_NAME != ''
+        if: env.RELEASE_TEST_MODE != 'true' && vars.SWAGGERHUB_OWNER != '' && vars.SWAGGERHUB_API_NAME != ''
         env:
           SWAGGERHUB_API_KEY: ${{ secrets.SWAGGERHUB_API_KEY }}
           SWAGGERHUB_OWNER: ${{ vars.SWAGGERHUB_OWNER }}
