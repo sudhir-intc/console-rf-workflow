@@ -48,7 +48,7 @@ jobs:
           # git checkout -b ${{ github.base_ref }} pull/${{ github.event.number }}/merge
           git remote set-url origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git"
           echo "Running semantic-release dry-run for branches: main and ${GITHUB_REF_NAME}"
-          npx semantic-release --dry-run --no-ci --branches main --branches "${GITHUB_REF_NAME}"
+          npx semantic-release --dry-run --no-ci
 
           if [ ! -f .VERSION ]; then
             echo "semantic-release did not generate .VERSION on branch '${GITHUB_REF_NAME}'."
